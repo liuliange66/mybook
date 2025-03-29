@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出海流程导航</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap">
+    <style>
+        :root {
+            --primary-color: #0070c9;
+            --secondary-color: #147ce5;
+            --background-color: #f5f5f7;
+            --card-background: #ffffff;
+            --text-color: #1d1d1f;
+            --text-secondary: #86868b;
+            --border-color: #d2d2d7;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh; /* 确保最小高度占满视口 */
+            position: relative; /* 为绝对定位元素提供参考 */
+            overflow-x: hidden; /* 防止水平溢出 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            overflow: visible; /* 确保内容溢出时可见 */
+        }
+
+        /* 头部样式 */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #0070c9, #5ac8fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #search {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            background-color: var(--card-background);
+            transition: all var(--transition-speed);
+            outline: none;
+        }
+
+        #search:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 112, 201, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            fill: var(--text-secondary);
+        }
+
+        /* 标签筛选器样式 */
+        #tag-filter {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .tag-btn {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 0.9rem;
+        }
+
+        .tag-btn:hover, .tag-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 导航栏样式 */
+        .category-nav {
+            margin-bottom: 2rem;
+            background-color: var(--card-background);
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            overflow-x: auto;
+            position: sticky; /* 使导航栏固定 */
+            top: 0; /* 固定在顶部 */
+            z-index: 100; /* 确保在其他内容之上 */
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            min-width: max-content; /* 确保内容不会被挤压 */
+        }
+
+        .category-nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+            white-space: nowrap;
+        }
+
+        .category-nav a:hover {
+            background-color: rgba(0, 112, 201, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* 分类样式 */
+        .category {
+            margin-bottom: 3rem;
+            background-color: var(--card-background);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            transition: transform var(--transition-speed);
+            opacity: 0;
+            overflow: visible; /* 确保内容溢出时可见 */
+        }
+
+        .category.fade-in {
+            opacity: 1;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+        }
+
+        .category h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .subcategory {
+            margin-bottom: 2rem;
+        }
+
+        .subcategory h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            overflow: visible; /* 确保内容溢出时可见 */
+        }
+
+        .card {
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all var(--transition-speed);
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border-color);
+            height: 100%;
+            display: flex;
+            z-index: 1; /* 确保卡片在悬停时在其他元素之上 */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+            z-index: 2; /* 悬停时提高层级 */
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: all var(--transition-speed);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* 加载动画 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 112, 201, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 暗黑模式变量 */
+        :root.dark-mode {
+            --primary-color: #0a84ff;
+            --background-color: #1c1c1e;
+            --card-background: #2c2c2e;
+            --text-color: #ffffff;
+            --text-secondary: #aeaeb2;
+            --border-color: #38383c;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .category {
+                padding: 1.5rem;
+            }
+            
+            .nav-container {
+                justify-content: start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>出海流程导航</h1>
+            <p class="subtitle">开启您的全球化数字旅程</p>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="搜索工具或资源...">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="none" d="M0 0h24v24H0z"/>
+                    <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </div>
+            <div id="tag-filter" class="tag-filter"></div>
+        </header>
+
+        <nav class="category-nav">
+            <div class="nav-container">
+                <a href="#demand-research">需求调研</a>
+                <a href="#domain">域名建设</a>
+                <a href="#code-hosting">代码托管</a>
+                <a href="#data-backend">数据后台</a>
+                <a href="#competitor-research">竞品调研</a>
+                <a href="#templates">开源模板</a>
+                <a href="#information">资讯获取</a>
+            </div>
+        </nav>
+
+        <main>
+            <section id="demand-research" class="category">
+                <h2>需求收集与关键词调研</h2>
+                <div class="card-container">
+                    <a href="https://www.searchsuggest.tips/?keyword=" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>谷歌下拉词</h3>
+                            <p>获取谷歌搜索下拉框相关关键词建议，辅助挖掘用户搜索需求</p>
+                        </div>
+                    </a>
+                    <a href="https://www.toolify.ai/Best-AI-Tools-revenue" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Toolify 榜单</h3>
+                            <p>查看各类 AI 工具的相关排名及营收信息，了解行业内热门 AI 工具动态</p>
+                        </div>
+                    </a>
+                    <a href="https://theresanaiforthat.com/requests" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>AI 导航站需求列表</h3>
+                            <p>收集用户对 AI 工具的需求信息，了解市场需求缺口</p>
+                        </div>
+                    </a>
+                    <a href="https://ahrefs.com/keyword-difficulty" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>关键词难度</h3>
+                            <p>分析关键词的优化难度，帮助确定目标关键词，合理分配优化资源</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="domain" class="category">
+                <h2>域名与网站基础建设</h2>
+                <div class="subcategory">
+                    <h3>域名查询</h3>
+                    <div class="card-container">
+                        <a href="https://leandomainsearch.com/" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Lean Domain Search</h3>
+                                <p>查询域名是否被注册，辅助选择合适的域名</p>
+                            </div>
+                        </a>
+                        <a href="https://query.domains/" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Query Domains</h3>
+                                <p>查询域名是否被注册，辅助选择合适的域名</p>
+                            </div>
+                        </a>
+                        <a href="https://instantdomainsearch.com/?q=" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Instant Domain Search</h3>
+                                <p>查询域名是否被注册，辅助选择合适的域名</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3>域名注册</h3>
+                    <div class="card-container">
+                        <a href="https://spaceship.com" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Spaceship</h3>
+                                <p>用于完成域名的注册购买流程，获取网站的网络标识</p>
+                            </div>
+                        </a>
+                        <a href="https://porkbun.com" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Porkbun</h3>
+                                <p>用于完成域名的注册购买流程，获取网站的网络标识</p>
+                            </div>
+                        </a>
+                        <a href="https://namecheap.com" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Namecheap</h3>
+                                <p>用于完成域名的注册购买流程，获取网站的网络标识</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="code-hosting" class="category">
+                <h2>代码 & 网站托管</h2>
+                <div class="card-container">
+                    <a href="https://github.com" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>GitHub</h3>
+                            <p>代码托管平台，方便团队协作开发，也可用于部署静态网站</p>
+                        </div>
+                    </a>
+                    <a href="https://cloudflare.com" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Cloudflare</h3>
+                            <p>提供 CDN 加速、网站安全防护等服务，提升网站访问速度和安全性</p>
+                        </div>
+                    </a>
+                    <a href="https://vercel.com" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Vercel</h3>
+                            <p>支持多种前端框架的网站部署，能快速将代码部署为线上网站</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="data-backend" class="category">
+                <h2>数据后台</h2>
+                <div class="card-container">
+                    <a href="https://search.google.com/console" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Google Search Console</h3>
+                            <p>监控网站在谷歌搜索中的表现，如搜索流量、关键词排名等</p>
+                        </div>
+                    </a>
+                    <a href="https://analytics.google.com/" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Google Analytics</h3>
+                            <p>统计网站流量数据，分析用户行为，如访客来源、页面浏览时长等</p>
+                        </div>
+                    </a>
+                    <a href="https://www.bing.com/webmasters/submiturl" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Bing Webmaster Tools</h3>
+                            <p>提交网站 URL，帮助必应搜索引擎抓取网站内容，监控在必应搜索中的表现</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="competitor-research" class="category">
+                <h2>竞品调研</h2>
+                <div class="card-container">
+                    <a href="https://aitdk.com" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>流量和网页关键词</h3>
+                            <p>分析竞品网站的流量数据及网页关键词布局，了解其在搜索引擎中的表现</p>
+                        </div>
+                    </a>
+                    <a href="https://ahrefs.com/free-seo-tools" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>外链查看</h3>
+                            <p>检测竞品网站的外部链接情况，评估其外链质量和数量</p>
+                        </div>
+                    </a>
+                    <a href="https://semrush.com" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>网站关键词</h3>
+                            <p>深入分析竞品网站的关键词策略，包括关键词排名、流量来源关键词等</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="templates" class="category">
+                <h2>上站模板（开源模板）</h2>
+                
+                <div class="subcategory">
+                    <h3>博客 & 内容类</h3>
+                    <div class="card-container">
+                        <a href="https://github.com/openRin/Rin" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Dynamic Blog Cloudflare</h3>
+                                <p>基于 Cloudflare Pages + Workers + D1 + R2 搭建动态博客</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/ixartz/Astro-boilerplate" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Astro Boilerplate</h3>
+                                <p>可用于创建响应式博客和展示作品集</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/weijunext/new-blog" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>周刊 BLOG</h3>
+                                <p>用于搭建博客网站</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3>通用建站 & 工具类</h3>
+                    <div class="card-container">
+                        <a href="https://github.com/ixartz/Next-js-Boilerplate" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Next.js 15 Boilerplate</h3>
+                                <p>支持 App Router 和 Page Router 的 Next.js 15 项目基础模板</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/ixartz/SaaS-Boilerplate" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>SaaS Boilerplate</h3>
+                                <p>基于 Next.js + Tailwind CSS + Shadcn UI + TypeScript 构建的 SaaS 应用模板</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>Next.js Landing Page</h3>
+                                <p>基于 Next.js 构建的着陆页模板</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3>导航站模板</h3>
+                    <div class="card-container">
+                        <a href="https://github.com/fre123-com/fre123-nav/" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>FRE123 导航</h3>
+                                <p>免费资源共享平台导航，一键搭建你的导航网站</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/dubinc/oss-gallery?ref=ossgallery" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>OSS Gallery</h3>
+                                <p>基于 Dub TypeScript SDK 构建的开源项目导航模板</p>
+                            </div>
+                        </a>
+                        <a href="https://github.com/WebStackPage/WebStackPage.github.io" class="card" target="_blank">
+                            <div class="card-content">
+                                <h3>WebStack</h3>
+                                <p>可搭建静态响应式网址导航网站</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="information" class="category">
+                <h2>资讯获取</h2>
+                <div class="card-container">
+                    <a href="https://liberating-doll-b8a.notion.site/Reddit-1a8e8aed91b18021839ecba8b74e530b" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Reddit 子社区</h3>
+                            <p>获取 Reddit 上相关技术、行业讨论等资讯，了解社区用户关注点和趋势</p>
+                        </div>
+                    </a>
+                    <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=zh-cn" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>谷歌搜索中心</h3>
+                            <p>学习谷歌搜索引擎优化的基础原理和内容创作指南</p>
+                        </div>
+                    </a>
+                    <a href="https://ahrefs.com/websites#trending" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Top Trending Websites</h3>
+                            <p>查看当前热门网站趋势，了解行业动态和竞争对手动向</p>
+                        </div>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1QOdq9q9KbjQj1JZO43vc1pir2rnEEsMUxzTDATrgid=0#gid=0" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>AI VIDEO SAAS TOOL</h3>
+                            <p>获取 AI 视频 SaaS 工具相关信息，掌握行业工具发展情况</p>
+                        </div>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1eUni44pIURML2VWFFXKzNmm-WKuuam9_ynr5Fo_Q74M/edit?gid=83151001#gid=83151001" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>Solopreneur Report</h3>
+                            <p>独立创业者相关数据、案例分析、市场洞察等内容</p>
+                        </div>
+                    </a>
+                    <a href="https://www.500mrr.com/" class="card" target="_blank">
+                        <div class="card-content">
+                            <h3>$500/month Side Projects</h3>
+                            <p>分享每月通过副业项目赚取 500 美元的相关案例、经验和方法</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 出海流程导航 | 基于苹果设计风格</p>
+        </footer>
+    </div>
+    
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 隐藏加载动画
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 800);
+            
+            // 创建标签筛选
+            createTagFilter();
+            
+            // 初始化暗黑模式
+            initTheme();
+            
+            // 搜索功能
+            const searchInput = document.getElementById('search');
+            const cards = document.querySelectorAll('.card');
+            
+            searchInput.addEventListener('keyup', function(e) {
+                enhancedSearch(e.target.value);
+            });
+            
+            // 为所有卡片添加点击事件以跟踪使用情况
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const url = this.getAttribute('href');
+                    const title = this.querySelector('h3').textContent;
+                    trackVisit(url, title);
+                    incrementUsageCount(title);
+                });
+            });
+            
+            // 平滑滚动到分类
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // 添加平滑的卡片动画
+            initCardAnimations();
+            
+            // 设置主题切换按钮
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                toggleTheme();
+            });
+            
+            // 显示最常用工具（延迟执行以确保其他元素已加载）
+            setTimeout(showMostUsedTools, 1000);
+        });
+        
+        // 标签筛选功能
+        const tags = {
+            'seo': ['谷歌下拉词', '关键词难度', '流量和网页关键词', '外链查看', '网站关键词'],
+            'ai': ['Toolify 榜单', 'AI 导航站需求列表', 'AI VIDEO SAAS TOOL'],
+            'domain': ['Lean Domain Search', 'Query Domains', 'Instant Domain Search',
+                    'Spaceship', 'Porkbun', 'Namecheap'],
+            'analytics': ['Google Search Console', 'Google Analytics', 'Bing Webmaster Tools'],
+            'templates': ['Dynamic Blog Cloudflare', 'Astro Boilerplate', '周刊 BLOG', 
+                        'Next.js 15 Boilerplate', 'SaaS Boilerplate', 'Next.js Landing Page',
+                        'WebStack', 'FRE123 导航', 'OSS Gallery']
+        };
+
+        // 创建标签筛选UI
+        function createTagFilter() {
+            const tagContainer = document.getElementById('tag-filter');
+            
+            // 添加"全部"按钮
+            const allBtn = document.createElement('button');
+            allBtn.className = 'tag-btn active';
+            allBtn.textContent = '全部';
+            allBtn.dataset.tag = 'all';
+            allBtn.addEventListener('click', function() {
+                resetTagFilter();
+                this.classList.add('active');
+            });
+            tagContainer.appendChild(allBtn);
+            
+            // 添加各个标签按钮
+            for (let tag in tags) {
+                const tagBtn = document.createElement('button');
+                tagBtn.className = 'tag-btn';
+                tagBtn.textContent = tag;
+                tagBtn.dataset.tag = tag;
+                tagBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.tag-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    filterByTag(tag);
+                });
+                tagContainer.appendChild(tagBtn);
+            }
+        }
+
+        // 根据标签筛选卡片
+        function filterByTag(tag) {
+            const tagItems = tags[tag];
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent;
+                const isMatch = tagItems.some(item => title.includes(item));
+                card.style.display = isMatch ? 'flex' : 'none';
+            });
+            
+            // 处理空分类显示
+            document.querySelectorAll('.category').forEach(category => {
+                const visibleCards = Array.from(category.querySelectorAll('.card')).filter(card => 
+                    card.style.display !== 'none'
+                ).length;
+                category.style.display = visibleCards > 0 ? 'block' : 'none';
+            });
+        }
+
+        // 重置标签筛选
+        function resetTagFilter() {
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.display = 'flex';
+            });
+            
+            document.querySelectorAll('.category').forEach(category => {
+                category.style.display = 'block';
+            });
+        }
+
+        // 记录访问历史
+        function trackVisit(url, title) {
+            let history = JSON.parse(localStorage.getItem('visitHistory') || '[]');
+            // 如果已存在，则移除旧记录
+            history = history.filter(item => item.url !== url);
+            // 添加到最前面
+            history.unshift({url, title, timestamp: Date.now()});
+            // 只保留最近10条记录
+            if (history.length > 10) history = history.slice(0, 10);
+            localStorage.setItem('visitHistory', JSON.stringify(history));
+        }
+
+        // 增强搜索功能
+        function enhancedSearch(term) {
+            const searchTerm = term.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            if (!searchTerm.trim()) {
+                resetTagFilter();
+                return;
+            }
+            
+            let foundAny = false;
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const category = card.closest('.category').querySelector('h2').textContent.toLowerCase();
+                
+                // 添加权重搜索
+                const titleMatch = title.includes(searchTerm) ? 3 : 0;
+                const descMatch = description.includes(searchTerm) ? 2 : 0;
+                const catMatch = category.includes(searchTerm) ? 1 : 0;
+                
+                const totalScore = titleMatch + descMatch + catMatch;
+                
+                if (totalScore > 0) {
+                    card.style.display = 'flex';
+                    foundAny = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 处理空分类显示
+            document.querySelectorAll('.category').forEach(category => {
+                const visibleCards = Array.from(category.querySelectorAll('.card')).filter(card => 
+                    card.style.display !== 'none'
+                ).length;
+                category.style.display = visibleCards > 0 ? 'block' : 'none';
+            });
+            
+            return foundAny;
+        }
+
+        // 工具使用统计
+        function incrementUsageCount(toolName) {
+            let stats = JSON.parse(localStorage.getItem('toolStats') || '{}');
+            stats[toolName] = (stats[toolName] || 0) + 1;
+            localStorage.setItem('toolStats', JSON.stringify(stats));
+        }
+
+        // 显示最常用工具
+        function showMostUsedTools() {
+            const stats = JSON.parse(localStorage.getItem('toolStats') || '{}');
+            const sortedTools = Object.entries(stats)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            if (sortedTools.length === 0) return;
+            
+            // 检查是否已存在最常用工具区域
+            if (document.querySelector('.most-used')) {
+                return;
+            }
+            
+            // 创建最常用工具区域
+            const mostUsedSection = document.createElement('section');
+            mostUsedSection.className = 'category most-used fade-in';
+            mostUsedSection.innerHTML = `
+                <h2>您的常用工具</h2>
+                <div class="card-container"></div>
+            `;
+            
+            // 将常用工具区域添加到主要内容的最前面
+            const mainContent = document.querySelector('main');
+            mainContent.insertBefore(mostUsedSection, mainContent.firstChild);
+            
+            // 复制对应的卡片到常用区域
+            for (const [toolName, count] of sortedTools) {
+                document.querySelectorAll('.card').forEach(card => {
+                    const cardTitle = card.querySelector('h3').textContent;
+                    if (cardTitle === toolName) {
+                        const clone = card.cloneNode(true);
+                        mostUsedSection.querySelector('.card-container').appendChild(clone);
+                    }
+                });
+            }
+        }
+
+        // 初始化卡片动画
+        function initCardAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.category').forEach(category => {
+                observer.observe(category);
+            });
+        }
+
+        // 主题相关函数
+        function saveUserPreferences(settings) {
+            localStorage.setItem('userPreferences', JSON.stringify(settings));
+        }
+
+        function loadUserPreferences() {
+            return JSON.parse(localStorage.getItem('userPreferences') || '{}');
+        }
+
+        function initTheme() {
+            const prefs = loadUserPreferences();
+            if (prefs.darkMode) {
+                applyTheme(true);
+                document.getElementById('theme-toggle').textContent = '☀️';
+            } else {
+                document.getElementById('theme-toggle').textContent = '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            applyTheme(!isDark);
+            
+            // 更新按钮图标
+            document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
+        }
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark-mode');
+            } else {
+                document.documentElement.classList.remove('dark-mode');
+            }
+            
+            // 保存设置
+            const prefs = loadUserPreferences();
+            prefs.darkMode = isDark;
+            saveUserPreferences(prefs);
+        }
+    </script>
+</body>
+</html>
